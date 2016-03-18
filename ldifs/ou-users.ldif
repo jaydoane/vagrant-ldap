@@ -1,0 +1,3 @@
+dn: {{ users_ou_dn }}
+ou: {{ users_ou }}
+objectClass: organizationalUnit

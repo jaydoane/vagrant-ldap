@@ -1,0 +1,5 @@
+dn: {{ olc_suffix }}
+dc: {{ domain }}
+o : {{ domain }}
+objectClass: dcObject
+objectClass: organization

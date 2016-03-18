@@ -1,0 +1,82 @@
+---
+# usage:
+# (ansible)jay@mbp:~/proj/ibm ansible-playbook install-ldap.yaml -i hosts
+
+# automate most of
+# http://docs.adaptivecomputing.com/viewpoint/hpc/Content/topics/1-setup/installSetup/settingUpOpenLDAPOnCentos6.htm
+
+- hosts: all
+  gather_facts: false
+  become: yes
+  become_user: root
+  tasks:
+    - yum: name=libselinux-python # apparently centos 6.7 defaults to selinux on
+    - yum: name=openldap
+    - yum: name=openldap-clients
+    - yum: name=openldap-servers
+
+- hosts: all
+  gather_facts: false
+  become: yes
+  become_user: root
+  vars:
+    tld: com
+    domain: example
+    olc_suffix: dc={{ domain }},dc={{ tld }}  # OLC: on-line configuration
+    root_dn: cn=Manager,{{ olc_suffix }}
+    root_password: secretsanta
+    users_ou: users
+    users_ou_dn: ou={{ users_ou }},{{ olc_suffix }}
+    groups_ou: groups
+    groups_ou_dn: ou={{ groups_ou }},{{ olc_suffix }}
+    config_dir: /etc/openldap/slapd.d/cn=config
+    bdb_ldif: '{{ config_dir }}/olcDatabase={2}bdb.ldif'
+    monitor_ldif: '{{ config_dir }}/olcDatabase={1}monitor.ldif'
+    ldif_dir: /root/ldifs
+  tasks:
+    - name: configure olcSuffix
+      lineinfile: "dest={{ bdb_ldif }}
+        regexp='^olcSuffix' line='olcSuffix: {{ olc_suffix }}'"
+
+    - name: configure olcRootDN
+      lineinfile: "dest={{ bdb_ldif }}
+        regexp='^olcRootDN' line='olcRootDN: {{ root_dn }}'"
+
+    - command: slappasswd -s {{ root_password }}
+      register: slappasswd_command
+    - set_fact: hashed_root_password={{ slappasswd_command.stdout }}
+    - debug: var=hashed_root_password
+    - name: configure olcRootPW
+      lineinfile: "dest={{ bdb_ldif }} insertafter='^olcRootDN'
+        regexp='^olcRootPW' line='olcRootPW: {{ hashed_root_password }}'"
+
+    - name: configure olcAccess_0
+      lineinfile: "dest={{ bdb_ldif }}
+        regexp='^olcAccess: [{]0[}]to attrs=userPassword'
+        line='olcAccess: {0}to attrs=userPassword by self write by dn.base=\"{{ root_dn}}\" write by anonymous auth by * none'"
+    - name: configure olcAccess_1
+      lineinfile: "dest={{ bdb_ldif }}
+        regexp='^olcAccess: [{]1[}]to *'
+        line='olcAccess: {1}to * by dn.base=\"{{ root_dn }}\" write by self write by * read'"
+
+    - replace: dest={{ monitor_ldif }} backup=yes
+        regexp='dc=my-domain' replace='dc=example'
+
+
+    - command: chkconfig slapd on
+    - service: name=slapd state=started
+
+    - file: dest={{ ldif_dir }} state=directory
+
+    - template: src={{ item }} dest={{ ldif_dir }} #owner=root mode=600
+      with_fileglob:
+        - ./ldifs/*
+
+    - file: dest={{ ldif_dir }}/add.sh mode=u+x
+    - file: dest={{ ldif_dir }}/delete.sh mode=u+x
+
+    - command: ./add.sh chdir={{ ldif_dir }}
+
+    - lineinfile:
+        line="alias lds=\"ldapsearch -x -b {{ olc_suffix }} '(objectclass=*)'\""
+        dest=/root/.bashrc

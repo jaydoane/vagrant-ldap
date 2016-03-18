@@ -1,0 +1,15 @@
+---
+# useful apps and their config files
+
+- hosts: all
+  gather_facts: false
+  tasks:
+    - lineinfile: line="alias r='sudo su -'" dest=~/.bashrc
+
+- hosts: all
+  gather_facts: false
+  become: yes
+  become_user: root
+  tasks:
+    - yum: name=emacs-nox
+    - copy: src=files/.emacs dest=/root/.emacs

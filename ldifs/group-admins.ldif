@@ -1,0 +1,6 @@
+dn: cn=admins,{{ groups_ou_dn }}
+cn: admins
+description: _admin
+memberUid: admin
+objectClass: posixGroup
+gidNumber: 0

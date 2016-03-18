@@ -1,0 +1,6 @@
+uid: foo
+userPassword: barfoo
+dn: uid=foo,{{ users_ou_dn }}
+cn: Foo User
+sn: Foo
+objectClass: inetOrgPerson

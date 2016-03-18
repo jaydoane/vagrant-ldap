@@ -1,0 +1,3 @@
+dn: {{ groups_ou_dn }}
+ou: {{ groups_ou }}
+objectClass: organizationalUnit

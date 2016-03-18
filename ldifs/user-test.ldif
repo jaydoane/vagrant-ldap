@@ -1,0 +1,6 @@
+uid: test
+dn: uid=test,{{ olc_suffix }}
+userPassword: pass
+cn: Test User
+sn: Test
+objectClass: inetOrgPerson
