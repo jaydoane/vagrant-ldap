@@ -22,7 +22,7 @@
   vars:
     tld: com
     domain: example
-    olc_suffix: dc={{ domain }},dc={{ tld }}  # OLC: on-line configuration
+    olc_suffix: dc={{ domain }},dc={{ tld }}  # OLC: on-line/openldap configuration
     root_dn: cn=Manager,{{ olc_suffix }}
     root_password: secretsanta
     users_ou: users
@@ -61,7 +61,6 @@
 
     - replace: dest={{ monitor_ldif }} backup=yes
         regexp='dc=my-domain' replace='dc=example'
-
 
     - command: chkconfig slapd on
     - service: name=slapd state=started
