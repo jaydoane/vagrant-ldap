@@ -1,6 +1,6 @@
+dn: uid=admin,{{ users_ou_dn }}
 uid: admin
 userPassword: pass
-dn: uid=admin,{{ users_ou_dn }}
 cn: Admin User
 sn: Admin
 objectClass: inetOrgPerson

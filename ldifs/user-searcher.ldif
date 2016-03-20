@@ -1,6 +1,6 @@
+dn: uid=ldapsearch,{{ users_ou_dn }}
 uid: ldapsearch
 userPassword: secret
-dn: uid=ldapsearch,{{ users_ou_dn }}
 cn: LDAP Searcher
 sn: LDAP
 objectClass: inetOrgPerson
