@@ -79,3 +79,24 @@
     - lineinfile:
         line="alias lds=\"ldapsearch -x -b {{ olc_suffix }} '(objectclass=*)'\""
         dest=/root/.bashrc
+
+    - name: enable openldap logging in rsyslog
+      lineinfile:
+        line='local4.* /var/log/ldap.log'
+        dest=/etc/rsyslog.conf
+      notify:
+      - restart rsyslog
+
+    - name: log everything
+      lineinfile:
+        "line='olcLogLevel: -1'
+        dest='/etc/openldap/slapd.d/cn=config.ldif'"
+      notify:
+      - restart openldap
+
+  handlers: 
+    - name: restart rsyslog
+      service: name=rsyslog state=restarted
+
+    - name: restart openldap
+      service: name=slapd state=restarted
