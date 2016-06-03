@@ -20,10 +20,10 @@
   become: yes
   become_user: root
   vars:
-    tld: com
-    domain: example
-    olc_suffix: dc={{ domain }},dc={{ tld }}  # OLC: on-line/openldap configuration
-    root_dn: cn=Manager,{{ olc_suffix }}
+    base_ou: tav
+    olc_suffix: ou={{ base_ou }},o=thales,c=fr
+
+    root_dn: cn=root,{{ olc_suffix }}
     root_password: secretsanta
     users_ou: users
     users_ou_dn: ou={{ users_ou }},{{ olc_suffix }}
