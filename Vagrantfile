@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
   config.vbguest.auto_update = false
-  config.vm.box = 'bento/centos-6.7'
+  config.vm.box = 'centos/6'
   config.vm.hostname = 'openldap.v'
   config.vm.network :private_network, ip: '192.168.56.31'
 
