@@ -1,0 +1,6 @@
+dn: uid=ldapadmin,{{ users_ou_dn }}
+uid: ldapadmin
+userPassword: secret
+cn: LDAP Admin
+sn: LDAPAdmin
+objectClass: inetOrgPerson
