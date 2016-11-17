@@ -11,5 +11,5 @@
   become: yes
   become_user: root
   tasks:
-    - yum: name=emacs-nox
+    # - yum: name=emacs-nox
     - copy: src=files/.emacs dest=/root/.emacs
