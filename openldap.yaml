@@ -94,7 +94,7 @@
       notify:
       - restart openldap
 
-  handlers: 
+  handlers:
     - name: restart rsyslog
       service: name=rsyslog state=restarted
 
